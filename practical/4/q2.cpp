@@ -1,59 +1,21 @@
 #include <iostream>
-#include <stack>
 #include <cmath>
+#include <cctype>
 using namespace std;
 
-int evaluatePostfix(string postfix)
+#define MAX 100
+
+int stack[MAX];
+int top = -1;
+
+void push(int value)
 {
-    stack<int> s;
+    stack[++top] = value;
+}
 
-    for (char ch : postfix)
-    {
-        // Operand
-        if (isdigit(ch))
-        {
-            s.push(ch - '0');
-        }
-
-        // Operator
-        else
-        {
-            int operand2 = s.top();
-            s.pop();
-
-            int operand1 = s.top();
-            s.pop();
-
-            int result;
-
-            switch (ch)
-            {
-                case '+':
-                    result = operand1 + operand2;
-                    break;
-
-                case '-':
-                    result = operand1 - operand2;
-                    break;
-
-                case '*':
-                    result = operand1 * operand2;
-                    break;
-
-                case '/':
-                    result = operand1 / operand2;
-                    break;
-
-                case '^':
-                    result = pow(operand1, operand2);
-                    break;
-            }
-
-            s.push(result);
-        }
-    }
-
-    return s.top();
+int pop()
+{
+    return stack[top--];
 }
 
 int main()
@@ -63,8 +25,43 @@ int main()
     cout << "Enter postfix expression: ";
     cin >> postfix;
 
-    cout << "Result: "
-         << evaluatePostfix(postfix) << endl;
+    for (char ch : postfix)
+    {
+        if (isdigit(ch))
+        {
+            push(ch - '0');
+        }
+        else
+        {
+            int operand2 = pop();
+            int operand1 = pop();
+
+            switch (ch)
+            {
+                case '+':
+                    push(operand1 + operand2);
+                    break;
+
+                case '-':
+                    push(operand1 - operand2);
+                    break;
+
+                case '*':
+                    push(operand1 * operand2);
+                    break;
+
+                case '/':
+                    push(operand1 / operand2);
+                    break;
+
+                case '^':
+                    push(pow(operand1, operand2));
+                    break;
+            }
+        }
+    }
+
+    cout << "Result: " << pop() << endl;
 
     return 0;
 }
